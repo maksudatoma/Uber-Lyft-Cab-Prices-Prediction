@@ -1,0 +1,143 @@
+---
+title: "Final Report"
+format:
+  pdf:
+    keep-tex: true
+    documentclass: article
+    papersize: letter
+    fontsize: 10pt
+    template-partials:
+      - title.tex
+      - before-bib.tex
+    include-in-header:
+      - text: |
+          \usepackage{sdss2020} % Uses Times Roman font (either newtx or times package)
+          \usepackage{url}
+          \usepackage{hyperref}
+          \usepackage{latexsym}
+          \usepackage{amsmath, amsthm, amsfonts}
+          \usepackage{algorithm, algorithmic}
+          \usepackage[dvipsnames]{xcolor} % colors
+          \newcommand{\mt}[1]{{\textcolor{blue}{#1}}}
+          \newcommand{\svp}[1]{{\textcolor{RedOrange}{#1}}}
+    classoption: [twocolumn]
+    mainfont: Times New Roman
+    colorlinks: true
+
+author:
+  - name: Maksuda Aktar Toma
+    affiliation: 
+            department: Statistics Department
+            name: University of Nebraska, Lincoln
+    email: "mtoma2@huskers.unl.edu"
+    corresponding: true
+  - name: Israt Zarin
+    affiliation: 
+            department: CSE Department
+            name: University of Nebraska, Lincoln
+    email: "abaksh2@huskers.unl.edu"
+    corresponding: true
+  - name: Md. Shadman Shakib
+    affiliation: 
+            department: CSE Department
+            name: University of Nebraska, Lincoln
+    email: "abaksh2@huskers.unl.edu"
+    corresponding: true
+    orcid: "0000-0002-3803-0972"
+bibliographystyle: acl
+bibliography: references.bib
+---
+
+# Abstract
+# 1.Introduction
+The significant changes in how people use urban transportation through Uber and Lyft ridesharing services lead to uncertain fare pricing due to shifting factors. The proposed modelling process will predict taxi fares through multiple analysis of booking information alongside customer usage statistics and environmental conditions as well as operational parameters. The model enables understanding of price variations in historical data so service providers along with customers can make informed choices.
+
+Operating extensive data requires difficulty through complex processing that results in unsatisfactory model accuracy stemming from data inconsistencies and limited database capacity. To tackle these issues, one must choose crucial characteristics while implementing efficient database management techniques and adopt resilient machine learning systems.
+
+The project uses two datasets:
+1.Historical records from Cab Rides Dataset contain ride information about fares together with timestamp data and whether the ride came from Uber or Lyft.
+
+2.The Weather Dataset includes weather measurements taken throughout multiple timestamps.
+
+# 2. Data loading and Processing
+The data quality enhancement due to pre processing procedures produced improved results from the model. The price column received median values for data replacement, while numeric weather dataset variables obtained median values for filling missing data points. When system developers converted Unix timestamps to datetime formats, they achieved the necessary time parameters, which included day of the week and hour of day. The linking variables made it possible for both datasets to merge their ride information and weather conditions together. Data simplification in the database occurred when we removed ride ID numbers and product ID codes along with location names from its columns. The one-hot encoding method functioned as the feature encoding solution because the model required effective processing of categorial features. All categorical codes were integrated into the database before its merger with the original dataset numbers, which maintained their numerical configuration. Median imputation filled all absent values in the dataset to maintain consistent data recording. The IQR method was applied to price column values for the purpose of maintaining model performance since these values exceeded their normal range. Using StandardScaler on input data for feature scaling helped yield superior results for the model. The model conducted tests with 20% of the data used for testing but utilised 80% of the data for training based on performance evaluation criteria. A double validation procedure was needed to confirm that all model training-generated values existed within the actual database. Adding preprocessing steps to the model strengthened its error resistance capabilities, thus producing reliable observations under all operational environments.
+
+## 2.1 Exploratory Analysis
+
+The histogram of ride prices is right skewed which shows that most rides cost between $5 and $20, with a noticeable peak around $13. The distribution is right-skewed, meaning there are fewer rides with higher prices beyond $30. Multiple smaller peaks suggest common price points, possibly tied to flat fares or standard trip lengths. The overlaid KDE (blue curve) smooths out the frequency and confirms these trends, highlighting clusters of frequent pricing values. This skewed distribution suggests that while most rides are relatively affordable, there are a fair number of pricier trips likely influenced by surge pricing or longer distances.
+![*Price Distribution*](hist.png)
+
+From @Fig-1 we can see that both Uber and Lyft prices generally increase with distance, which aligns with the expected ride-sharing pricing model where longer rides cost more. However, Lyft prices exhibit greater variability at shorter distances (under 3 miles), suggesting that Lyft may be more sensitive to demand fluctuations and surge pricing. Uber prices, on the other hand, appear more stable and consistent for shorter rides. For longer distances (beyond 5 miles), Lyft prices tend to rise more steeply compared to Uber, indicating a different long-distance pricing strategy or more aggressive surge pricing. This suggests that Uber may be a more economical choice for shorter trips, while Lyft may become more expensive for longer rides due to increased price sensitivity to demand.
+
+![**The Average Price by Distance**](price by distance.png)
+
+
+
+The plot shows that as the surge multiplier increases, the median price increases for both Uber and Lyft, which aligns with the dynamic pricing model used by ride-sharing companies. However, Lyft exhibits greater sensitivity to surge pricing. At a surge multiplier of **1.0** (no surge), Lyft has higher median prices and greater variability compared to Uber. As the surge multiplier increases, Lyft prices become more widely spread, indicating greater price sensitivity. In contrast, Uber prices increase more gradually and remain more stable even at higher surge multipliers. At higher surge values (2.0+), Lyft prices rise more steeply and show greater variation, while Uber's prices remain more predictable. This suggests that Uber may offer more consistent pricing, while Lyft may apply more aggressive surge pricing strategies during high-demand periods.
+
+![**Surge Multiplier Effect on Price**](000010.png)
+The plot shows that for both Uber and Lyft, the average price increases with the size and luxury of the vehicle. For Uber, **UberPool** and **WAV** are the most affordable options, with average prices below **$10**. For Lyft, **Shared** rides are the cheapest, also averaging under **$10**. Standard ride options — **UberX** and **Lyft** — have similar average pricing, around **$10–15**, indicating consistent pricing for everyday rides.
+
+For larger vehicles like **UberXL** and **Lyft XL**, the average price increases to around **$15–20**, reflecting the higher capacity and comfort. Luxury rides are the most expensive; for Uber, **Black** and **Black SUV** rides exceed **$20**, reaching up to **$30**. Lyft’s luxury options, such as **Lux Black** and **Lux Black XL**, also have high average prices, with **Lux Black XL** averaging over **$30**. 
+
+Lyft shows greater variability in pricing for luxury rides, suggesting more aggressive dynamic pricing for high-end services. In contrast, Uber's luxury rides are more consistent but still expensive. For budget-conscious riders, UberPool and Lyft Shared are ideal options, while for premium comfort, Lyft and Uber's luxury options come at a higher cost.
+
+
+![*Average Prices by Vehicle Type for Uber and Lyft*](000012!.png)
+The plot shows that locations with higher demand, such as *Financial District*, *Fenway*, and *Boston University*, have higher median prices for both Uber and Lyft. This suggests that high-demand business and tourist areas trigger higher surge pricing. For most pickup locations, Lyft tends to have higher median prices than Uber, with the price difference being more noticeable at high-traffic locations like Financial District and Fenway.Pricing is more stable at residential and low-traffic areas like **North End**, **North Station**, and **West End**, where price variation is smaller, indicating lower surge pricing or less demand. However, locations like **Beacon Hill**, **Boston University**, and **Fenway** show a wide interquartile range (IQR) and higher outliers, reflecting more aggressive surge pricing or demand spikes during peak hours.The overall price variation is larger for Lyft, suggesting greater sensitivity to demand and surge pricing. Uber's pricing, on the other hand, remains more consistent across most locations. For more predictable pricing, Uber may be a better option in busy areas, while Lyft's aggressive surge pricing may result in higher fares during peak demand.
+
+![*Pickup Location vs Price*](000014.png)
+
+### Important Feature Selection
+
+**Correlation**
+The heatmap shows the correlation between different numeric variables in the dataset. Distance and surge multiplier have a strong positive correlation with price, indicating that longer distances and higher surge multipliers lead to higher ride costs. Temperature shows a moderate positive correlation with price, while pressure and clouds have a negative relationship, which aligns with typical weather patterns. Wind has a weak correlation with price, suggesting minimal impact. Most correlations are below ±0.7, indicating no strong multicollinearity and ensuring model stability. Interestingly, rain and humidity are strongly positively correlated, and surge multiplier appears to have a greater influence on pricing than distance alone.
+
+![**Correlation Heatmap**](000012.png)
+
+The feature importance plot shows that the type of cab (Lyft vs Uber) is the most influential factor in determining ride prices, with cab_type_Lyft ranking highest in importance. Weather conditions, particularly rain, are also strong predictors, likely due to increased demand during bad weather. Distance is another key driver of price, which aligns with the expected pricing structure in ride-sharing models. Other weather-related factors like wind and pressure have moderate influence, while humidity and surge multipliers also contribute, but less strongly than cab type and distance. Premium vehicle types (name_Lux, name_Black, and name_Lyft XL) moderately affect pricing, while temporal factors like hour_of_day and day_of_week have relatively low impact. Overall, cab type and weather are the dominant factors influencing ride prices, with distance playing a consistently strong role.
+
+![*Important Features*](imp feature.png)
+
+![*Important Features*](important features.png)
+
+# 3. Results
+
+## 3.1 Model Selection and Hyperparameter Tuning
+In this section we'll discuss about the models we have fitted for the analysis and their evaluation. In total we have tried 5 models. Linear Regression, KNN, Random Forest, GBM and Elastic Net regression.
+
+### 3.1.1 Random Forest
+We first trained a baseline Random Forest model without hyperparameter tuning to evaluate the model's performance with default settings. The model was trained using RandomForestRegressor(random_state=42) and fitted to the training data. The model achieved strong performance with an R² score of 0.9568, indicating that it explains approximately 96% of the variation in ride prices. The Mean Absolute Error (MAE) was 1.13, meaning the model’s predictions are on average $1.13 away from the actual price. The Mean Squared Error (MSE) of 3.03 reflects a low average squared difference, suggesting the model generalizes well to unseen data.
+
+Although we used default parameters for this initial run, the Random Forest model is well-suited for hyperparameter tuning (e.g., number of estimators, tree depth, minimum samples per split), which we planned to implement using GridSearchCV or RandomizedSearchCV for optimization in later steps. However, even without tuning, the model demonstrated strong predictive capabilities.
+
+### 3.1.2 Linear Regression
+As a baseline model, we trained a Linear Regression using the LinearRegression class from scikit-learn. After standardizing the features and splitting the data into training and testing sets, the model was fitted to the training data and evaluated on the test set. The performance metrics show that the Linear Regression model explains approximately 92.5% of the variance in ride prices, indicating a solid fit despite its simplicity. While the performance is slightly lower compared to more complex models like Random Forest (which achieved an R² of 0.9568 and MSE of 3.0275), this model offers the advantage of interpretability and computational efficiency. Linear regression serves as a valuable benchmark and highlights the predictive power that can be achieved even without non-linear transformations or ensemble methods
+
+
+### 3.1.3 K-Nearest Neighbors (KNN) Model Evaluation
+
+We implemented a K-Nearest Neighbors Regressor (KNN) to evaluate how well a non-parametric, instance-based model could predict ride prices. The model was trained using the standardized feature set (`X_train`, `y_train`) with the number of neighbors (*k*) set to 5 — a common default value that can be tuned for optimal performance. After training, predictions were made on the test data and the model was evaluated using standard regression metrics. The KNN model achieved an R² Score of 0.9559, indicating a strong fit between the predicted and actual prices. The Mean Absolute Error (MAE) was 1.1661, showing the average prediction was off by about $1.17, and the Mean Squared Error (MSE) was 3.0886, reflecting good accuracy across the dataset. These results are highly competitive, nearly matching the performance of the Random Forest model. The KNN algorithm proves effective here, suggesting that nearby instances in the feature space share similar pricing. However, it's worth noting that KNN can be computationally expensive on large datasets and lacks model interpretability compared to linear models or tree-based ensembles.
+
+### 3.1.4 Elastic Net Regression
+
+To evaluate the predictive performance of a regularized linear model, we implemented an Elastic Net Regressor, which combines both L1 (Lasso) and L2 (Ridge) penalties. Prior to model training, we applied median imputation using `SimpleImputer` to handle missing values in the feature set. We then conducted hyperparameter tuning using `RandomizedSearchCV` with a small search space of 5 random combinations of `alpha` (regularization strength) and `l1_ratio` (mix between L1 and L2 penalties), employing 2-fold cross-validation. Upon evaluation, the Elastic Net model achieved an **R² Score of 0.9237**, a **Mean Absolute Error (MAE) of 1.6978**, and a **Mean Squared Error (MSE) of 5.2785**. While its performance was slightly lower than that of more flexible models such as Random Forest or KNN, Elastic Net offers better interpretability and a more stable solution in the presence of correlated predictors.
+
+### 3.1.5 Extreme Gradient Boosting Machine
+
+To leverage the power of gradient boosting, we implemented an XGBoost Regressor for predicting ride prices. We used `RandomizedSearchCV` to efficiently explore a reduced hyperparameter space with 5 randomized combinations, optimizing parameters such as `n_estimators`, `max_depth`, `learning_rate`, `subsample`, and `colsample_bytree` over 3-fold cross-validation. This allowed us to balance tuning time and performance. Early stopping was not used in this case to maintain compatibility with the scikit-learn interface. Once the best combination was identified, the final model was trained on the full training set and evaluated on the test data. The XGBoost model achieved an **R² Score of 0.9616**, a **Mean Absolute Error (MAE) of 1.0943**, and a **Mean Squared Error (MSE) of 2.6571**. These results represent the strongest performance among all tested models, showcasing XGBoost’s strength in capturing complex relationships and interactions in the data while maintaining generalization performance.
+
+## 4.1 Model Evaluation
+The visual comparison of model performance across five regression approaches—Linear Regression, Elastic Net, KNN, Random Forest, and XGBoost—demonstrates clear distinctions in predictive accuracy. Based on R² scores, which measure how well each model explains the variance in ride prices, XGBoost performed the best, capturing 96.16% of the variance. Random Forest and KNN followed closely with R² scores of 95.68% and 95.59%, respectively. Linear Regression (92.54%) and Elastic Net (92.37%) showed comparatively lower, though still reasonable, performance. The MSE pie chart further highlights model efficiency by showing each model's share of total error. XGBoost again outperformed all others, contributing the smallest portion to total error (13.78%), followed by Random Forest (15.70%) and KNN (16.02%). In contrast, Linear Regression and Elastic Net had the highest MSE contributions at 27.11% and 27.38%, respectively. These results confirm that tree-based and instance-based models provide superior accuracy over traditional linear methods for this problem.
+
+![*Model Comparison bar chart*](Bar.png)     
+
+![*Model Comparison pie chart*](pie.png)  
+
+### 4.2 Prediction Accuracy
+
+The scatter plot of actual vs. predicted prices shows that the model did a good job overall. Most points fall close to the diagonal line, meaning the predicted prices closely match the actual ones. There are some slight deviations at higher prices, likely due to outliers or skewed data, but the tight clustering suggests the model makes accurate and consistent predictions for most rides
+
+![*Prediction Accuracy Scatterplot*](a vs p.png)
+
+# 5. Reference
